@@ -1,0 +1,15 @@
+#ifndef LED_CONTROLLER_ENUMS_H
+#define LED_CONTROLLER_ENUMS_H
+
+enum
+{
+    MODE_RED,
+    MODE_GREEN,
+    MODE_BLUE,
+    MODE_WHITE,
+    MODE_RAINBOW,
+    MODE_CUSTOM,
+    NUM_MODES
+};
+
+#endif // LED_CONTROLLER_ENUMS_H
