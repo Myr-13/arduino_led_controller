@@ -36,15 +36,21 @@ void CWindow::Update()
 	sf::Time DeltaTime = m_DeltaClock.restart();
 	ImGui::SFML::Update(m_Window, DeltaTime);
 
+	SSerialData &Data = m_Serial.m_Data;
+
 	ImGui::Begin("Main");
 	ImGui::Text("Serial info:");
-	ImGui::SliderInt("Mode", &m_Serial.m_Data.m_Mode, 0, NUM_MODES - 1);
-	ImGui::SliderInt("Bright", &m_Serial.m_Data.m_Bright, 0, 255);
-	ImGui::SliderInt("Speed", &m_Serial.m_Data.m_Speed, 1, 255);
-	ImGui::SliderInt("Temperature", &m_Serial.m_Data.m_Temperature, 0, 255);
-	ImGui::ColorEdit3("Custom color", m_Serial.m_Data.m_CustomColor);
+	ImGui::SliderInt("Mode", &Data.m_Mode, 0, NUM_MODES - 1);
+	ImGui::SliderInt("Bright", &Data.m_Bright, 0, 255);
+	if(!m_OnlySupport || Data.m_Mode == MODE_RAINBOW)
+		ImGui::SliderInt("Speed", &Data.m_Speed, 1, 255);
+	if(!m_OnlySupport || Data.m_Mode == MODE_WHITE)
+		ImGui::SliderInt("Temperature", &Data.m_Temperature, 0, 255);
+	if(!m_OnlySupport || Data.m_Mode == MODE_CUSTOM)
+		ImGui::ColorEdit3("Custom color", Data.m_CustomColor);
 	ImGui::Text("Other:");
 	m_Quiting = ImGui::Button("Exit");
+	ImGui::Checkbox("Show only supported settings for current mode", &m_OnlySupport);
 	ImGui::End();
 
 	static const char *s_apItems[] = {"9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600", "1000000", "2000000"};
@@ -80,6 +86,7 @@ void CWindow::SaveConfig()
 	File << (int)(m_Serial.m_Data.m_CustomColor[1] * 255) << " ";
 	File << (int)(m_Serial.m_Data.m_CustomColor[2] * 255) << " ";
 	File << m_Serial.m_Port << " ";
+	File << (int)m_OnlySupport << " ";
 
 	File.close();
 }
@@ -99,6 +106,7 @@ void CWindow::LoadConfig()
 	File >> Temp; m_Serial.m_Data.m_CustomColor[1] = (float)std::stoi(Temp) / 255;
 	File >> Temp; m_Serial.m_Data.m_CustomColor[2] = (float)std::stoi(Temp) / 255;
 	File >> m_Serial.m_Port;
+	File >> Temp; m_OnlySupport = (bool)std::stoi(Temp);
 
 	File.close();
 }

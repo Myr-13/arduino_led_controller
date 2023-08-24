@@ -17,6 +17,7 @@ class CWindow
 	bool m_Visible;
 	sf::Clock m_DeltaClock;
 	CSerialManager m_Serial;
+	bool m_OnlySupport;
 
 public:
 	bool m_Quiting;
