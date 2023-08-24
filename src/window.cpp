@@ -106,7 +106,7 @@ void CWindow::LoadConfig()
 void CWindow::Close()
 {
 	m_Window.close();
-	m_SerialManager.Delete();
+	m_Serial.Delete();
 	SaveConfig();
 }
 
