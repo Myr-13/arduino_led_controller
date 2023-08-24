@@ -34,6 +34,7 @@ public:
 
 	void Open();
 	void Close();
+	void Delete();
 
 	int m_BaudRate;
 	std::string m_Port;

@@ -10,20 +10,18 @@ int main() {
     CWindow win(600, 600);
 
     bool old_pressed = false;
-	while(true)
-	{
-		if(win.m_Quiting)
-			break;
-
+	while(!win.m_Quiting) {
 		// Key bind for show/hide window
-        bool pressed = GetAsyncKeyState(VK_CONTROL) && GetAsyncKeyState(VK_LWIN) && GetAsyncKeyState(VK_F10);
-        if(pressed && !old_pressed)
-            win.ToggleVisible();
+		bool pressed = GetAsyncKeyState(VK_CONTROL) && GetAsyncKeyState(VK_LWIN) && GetAsyncKeyState(VK_F10);
+		if (pressed && !old_pressed)
+			win.ToggleVisible();
 
-        old_pressed = pressed;
+		old_pressed = pressed;
 
-        win.Update();
+		win.Update();
 	}
+
+	win.Close();
 
 	return 0;
 }

@@ -23,7 +23,11 @@ public:
 
 	CWindow(unsigned int W, unsigned int H);
 
+	void Close();
+
 	void Update();
+	void SaveConfig();
+	void LoadConfig();
 
 	void ToggleVisible();
 	void Show();

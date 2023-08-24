@@ -17,8 +17,7 @@ CSerialManager::CSerialManager()
 
 CSerialManager::~CSerialManager()
 {
-	m_ThreadRunning = false;
-	m_Thread.join();
+	Delete();
 }
 
 void CSerialManager::ThreadFunc()
@@ -76,4 +75,11 @@ void CSerialManager::Open()
 void CSerialManager::Close()
 {
 	m_Connect = false;
+}
+
+void CSerialManager::Delete()
+{
+	Close();
+	m_ThreadRunning = false;
+	m_Thread.join();
 }

@@ -1,5 +1,7 @@
 #include "window.h"
 
+#include <fstream>
+
 CWindow::CWindow(unsigned int W, unsigned int H)
 {
 	m_Quiting = false;
@@ -11,6 +13,9 @@ CWindow::CWindow(unsigned int W, unsigned int H)
 	m_Window.setFramerateLimit(60);
 
 	ImGui::SFML::Init(m_Window);
+
+	// Config
+	LoadConfig();
 
 	// Hide window
 	//Hide();
@@ -31,12 +36,15 @@ void CWindow::Update()
 	sf::Time DeltaTime = m_DeltaClock.restart();
 	ImGui::SFML::Update(m_Window, DeltaTime);
 
-	ImGui::Begin("Settings");
+	ImGui::Begin("Main");
+	ImGui::Text("Serial info:");
 	ImGui::SliderInt("Mode", &m_Serial.m_Data.m_Mode, 0, NUM_MODES - 1);
 	ImGui::SliderInt("Bright", &m_Serial.m_Data.m_Bright, 0, 255);
 	ImGui::SliderInt("Speed", &m_Serial.m_Data.m_Speed, 1, 255);
 	ImGui::SliderInt("Temperature", &m_Serial.m_Data.m_Temperature, 0, 255);
 	ImGui::ColorEdit3("Custom color", m_Serial.m_Data.m_CustomColor);
+	ImGui::Text("Other:");
+	m_Quiting = ImGui::Button("Exit");
 	ImGui::End();
 
 	static const char *s_apItems[] = {"9600", "19200", "38400", "57600", "115200", "230400", "460800", "921600", "1000000", "2000000"};
@@ -56,6 +64,50 @@ void CWindow::Update()
 	m_Window.clear();
 	ImGui::SFML::Render(m_Window);
 	m_Window.display();
+}
+
+void CWindow::SaveConfig()
+{
+	std::ofstream File("config.txt");
+	if(!File)
+		return;
+
+	File << m_Serial.m_Data.m_Mode << " ";
+	File << m_Serial.m_Data.m_Bright << " ";
+	File << m_Serial.m_Data.m_Speed << " ";
+	File << m_Serial.m_Data.m_Temperature << " ";
+	File << (int)(m_Serial.m_Data.m_CustomColor[0] * 255) << " ";
+	File << (int)(m_Serial.m_Data.m_CustomColor[1] * 255) << " ";
+	File << (int)(m_Serial.m_Data.m_CustomColor[2] * 255) << " ";
+	File << m_Serial.m_Port << " ";
+
+	File.close();
+}
+
+void CWindow::LoadConfig()
+{
+	std::ifstream File("config.txt");
+	if(!File)
+		return;
+
+	std::string Temp;
+	File >> Temp; m_Serial.m_Data.m_Mode = std::stoi(Temp);
+	File >> Temp; m_Serial.m_Data.m_Bright = std::stoi(Temp);
+	File >> Temp; m_Serial.m_Data.m_Speed = std::stoi(Temp);
+	File >> Temp; m_Serial.m_Data.m_Temperature = std::stoi(Temp);
+	File >> Temp; m_Serial.m_Data.m_CustomColor[0] = (float)std::stoi(Temp) / 255;
+	File >> Temp; m_Serial.m_Data.m_CustomColor[1] = (float)std::stoi(Temp) / 255;
+	File >> Temp; m_Serial.m_Data.m_CustomColor[2] = (float)std::stoi(Temp) / 255;
+	File >> m_Serial.m_Port;
+
+	File.close();
+}
+
+void CWindow::Close()
+{
+	m_Window.close();
+	m_SerialManager.Delete();
+	SaveConfig();
 }
 
 void CWindow::ToggleVisible()
