@@ -15,11 +15,6 @@ CSerialManager::CSerialManager()
 	m_Thread = std::thread([&]() { ThreadFunc(); });
 }
 
-CSerialManager::~CSerialManager()
-{
-	Delete();
-}
-
 void CSerialManager::ThreadFunc()
 {
 	ceSerial Com;
@@ -35,8 +30,7 @@ void CSerialManager::ThreadFunc()
 			Com.SetBaudRate(m_BaudRate);
 			Com.SetPortName(std::string(R"(\\.\)") + m_Port);
 
-			if(Com.Open() == 0)
-				m_State = SM_STATE_CONNECTED;
+			Com.Open();
 		}
 
 		// Send data
@@ -57,10 +51,9 @@ void CSerialManager::ThreadFunc()
 
 		// Closing
 		if(Com.IsOpened() && !m_Connect)
-		{
 			Com.Close();
-			m_State = SM_STATE_NOT_CONNECTED;
-		}
+
+		m_State = (int)Com.IsOpened();
 
 		// Sleep 100ms
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));

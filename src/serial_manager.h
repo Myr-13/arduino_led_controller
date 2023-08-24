@@ -30,7 +30,6 @@ class CSerialManager {
 
 public:
 	CSerialManager();
-	~CSerialManager();
 
 	void Open();
 	void Close();
